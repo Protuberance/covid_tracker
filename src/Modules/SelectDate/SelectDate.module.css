@@ -1,0 +1,31 @@
+.inline {
+    display: inline-block;
+}
+
+.SelectDate p{
+    margin: 0;
+}
+
+.arrow {
+    width: 19px;
+    height: 23px;
+    position: relative;
+    overflow: hidden;
+    vertical-align: bottom;
+    margin: auto 10px;
+    cursor: pointer;
+}
+
+.arrow:before {
+    content: " ";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: url('../../Images/arrow-3-512.png') no-repeat;
+    background-size: 20px;
+    background-position-y: 1px;
+}
+
+.right:before {
+    transform: rotate(180deg);
+}

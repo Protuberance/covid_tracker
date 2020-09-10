@@ -1,26 +1,59 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import style from './App.module.css';
+import GeneralPieChart from './Modules/GeneralPieChart/GeneralPieChart';
+import OneCountryStatistics from './Modules/OneCountryStatistics/OneCountryStatistics';
+import TopCountries from './Modules/TopCountries/TopCountries';
+import AllCountries from './Modules/AllCountries/AllCountries';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: true,
+      countries: null,
+      dropdownData: null
+    }
+  }
+
+  componentDidMount() {
+    let url = "/regions";
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+
+        let dropdownData = data.map((element) => {
+          let result = {
+            key: element.iso,
+            text: element.name
+          }
+          return result
+        });
+
+        dropdownData.sort();
+
+        this.setState({
+          loading: false,
+          countries: data,
+          dropdownData: dropdownData
+        });
+      })
+  }
+
+  render() {
+    if (this.state.loading)
+      return ('Hello');
+    else {
+      return (
+        <div className={style.AppContainer}>
+          <GeneralPieChart></GeneralPieChart>
+          <OneCountryStatistics dropdownData={this.state.dropdownData} countries={this.state.countries}></OneCountryStatistics>
+          <TopCountries></TopCountries>
+          <AllCountries></AllCountries>
+        </div>
+      )
+    }
+  }
 }
 
 export default App;

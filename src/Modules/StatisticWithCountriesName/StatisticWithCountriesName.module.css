@@ -1,0 +1,8 @@
+.flexContainer{
+    display: flex;
+}
+
+.inlineBlock{
+    display: inline-block;
+    width: 25%;
+}

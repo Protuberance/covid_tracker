@@ -1,0 +1,11 @@
+.SingleLineView{
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    margin: auto 5px;
+    width: 100%;
+}
+.SingleLineView p{
+    width: 25%;
+    text-align: center;
+}

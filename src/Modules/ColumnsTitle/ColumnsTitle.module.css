@@ -1,0 +1,31 @@
+.ColumnsTitle {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    margin: auto 5px;
+    width: 100%;
+}
+
+.ColumnsTitle p {
+    width: 25%;
+    text-align: center;
+}
+
+.clickable {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.ColumnsTitle div {
+    width: 25%;
+}
+
+.ColumnsTitleContainer {
+    display: flex;
+    width: 100%;
+    margin: auto 0 auto auto;
+}
+
+.ColumnsTitleContainer p:first-child {
+    width: 25%;
+}
