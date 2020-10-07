@@ -7,11 +7,11 @@ module.exports = (req, res) => {
     req.app.locals.collection.findOne({ date: date }, (err, result) => {
         if (err) {
             console.log(err);
-            res.send(JSON.stringify({}));
+            res.sendStatus(500);
         }
 
         if (result === null || result === {} || result === undefined) {
-            res.send(JSON.stringify({}));
+            res.sendStatus(500);
         }
 
         const top = result.countries.sort((a, b) => {

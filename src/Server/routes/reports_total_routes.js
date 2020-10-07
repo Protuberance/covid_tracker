@@ -2,12 +2,12 @@ module.exports = (req, res) => {
     req.app.locals.collection.findOne({ 'date': req.query.date }, (err, result) => {
         if (err) {
             console.log(err);
-            res.send(JSON.stringify(null));
+            res.sendStatus(500);
             return;
         }
 
         if (result === null || result === {} || result === undefined) {
-            res.send(JSON.stringify(null));
+            res.sendStatus(404);
             return;
         }
 

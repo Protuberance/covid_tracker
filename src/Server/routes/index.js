@@ -8,7 +8,7 @@ const getTopStatistic = require('./reports_top_routes');
 
 
 router.get('/regions', (req, res) => {
-    res.send(JSON.stringify(regions));
+    res.st.send(JSON.stringify(regions));
 });
 
 router.get('/reports/country', getCountryStatistic);

@@ -1,7 +1,7 @@
 const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
 const route = require('./routes/index')
-const dataUpdate = require('./utils/dataUpdate');
+const dataUpdate = require('./utils/checkDbStatus');
 const config = require('./config');
 
 const app = express();

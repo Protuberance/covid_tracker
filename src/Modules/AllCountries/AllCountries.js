@@ -4,14 +4,14 @@ import SelectDate from '../SelectDate/SelectDate';
 import moment from 'moment';
 import StatisticWithCountriesName from '../StatisticWithCountriesName/StatisticWithCountriesName';
 import Title from '../Title/Title';
-import ColumnsTitleLong from '../ColumnsTitle/ColumnsTitleLong';
+import ColumnsTitleLong from '../ColumnsTitle/ColumnsLongTitle';
 
 class AllCountries extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            currentDate: moment().add(-2, 'days').format('YYYY-MM-DD'),
+            currentDate: moment().add(-25, 'days').format('YYYY-MM-DD'),
             countries: null
         };
 
@@ -36,8 +36,7 @@ class AllCountries extends Component {
 
         fetch(url)
             .then(response => response.json())
-            .then(data => {
-                
+            .then(data => {                
                 if (data === {}) {
                     this.showError();
                     return;

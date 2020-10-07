@@ -1,18 +1,22 @@
 import React, { Component } from 'react';
 import style from './TopCountries.module.css';
-import SelectDate from '../SelectDate/SelectDate';
 import moment from 'moment';
+import C from '../../constants';
+import SelectDate from '../SelectDate/SelectDate';
 import StatisticWithCountriesName from '../StatisticWithCountriesName/StatisticWithCountriesName';
+import LoadError from '../LoadError/LoadError';
 import Title from '../Title/Title';
-import ColumnsTitleLong from '../ColumnsTitle/ColumnsTitleLong';
+import ColumnsLongTitle from '../ColumnsTitle/ColumnsLongTitle';
 
 class TopCountries extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            currentDate: moment().add(-2, 'days').format('YYYY-MM-DD'),
+            currentDate: props.currentDate,
+            maxDate: props.maxDate,
             top: null,
+            loadError: false,
             query: 'confirmed'
         };
 
@@ -26,48 +30,43 @@ class TopCountries extends Component {
         this.getTop(this.state.currentDate);
     }
 
-    getTop(date) {
+    async getTop(date) {
         let url = `/reports/top?date=${date}&query=${this.state.query}`;
 
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-
-                if (data === {}) {
-                    this.showError();
-                    return;
-                }
-
-                this.setState({
-                    ...this.state,
-                    top: data
-                });
-            })
-    }
-
-    showError() {
-        console.log('There is no data for this date or country');
+        try {
+            let response = await fetch(url);
+            let data = await response.json();
+            this.setState({
+                ...this.state,
+                top: data
+            });
+        } catch (err) {
+            this.setState({
+                ...this.state,
+                loadError: true
+            });
+        }
     }
 
     columnsTitleClickHandler(e) {
         let query;
 
         if (e.target.textContent === 'Всего:') {
-            query = 'confirmed'
+            query = 'confirmed';
         }
         else if (e.target.textContent === 'Новых:') {
-            query = 'confirmed_diff'
+            query = 'confirmed_diff';
         }
         else if (e.target.textContent === 'Смертей:') {
-            query = 'deaths'
+            query = 'deaths';
         }
         else if (e.target.textContent === 'Окрепшие:') {
-            query = 'recovered'
+            query = 'recovered';
         }
 
         if (query !== this.state.query) {
             this.setState({ ...this.state, query: query }, () => {
-                this.getTop(this.state.currentDate)
+                this.getTop(this.state.currentDate);
             })
         }
     }
@@ -86,26 +85,34 @@ class TopCountries extends Component {
     }
 
     render() {
-        if (this.state.top === null) {
+        if (this.state.loadError) {
             return (
                 <div className={style.TopCountries}>
                     <Title text='Топ 5 стран'></Title>
-                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate='2020-02-01' maxDate={moment().add(-1, 'days').format('YYYY-MM-DD')} onChange={this.dateChangeHandler} ></SelectDate>
-                    <div>TopCountries</div>
+                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate={C.MIN_DATE} maxDate={this.state.maxDate} onChange={this.dateChangeHandler} ></SelectDate>
+                    <LoadError></LoadError>
+                </div>
+            )
+        }
+        else if (this.state.top === null) {
+            return (
+                <div className={style.TopCountries}>
+                    <Title text='Топ 5 стран'></Title>
+                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate={C.MIN_DATE} maxDate={this.state.maxDate} onChange={this.dateChangeHandler} ></SelectDate>
+                    <div>TopCountries..</div>
                 </div>
             )
         } else {
             return (
                 <div className={style.TopCountries}>
                     <Title text='Топ 5 стран'></Title>
-                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate='2020-02-01' maxDate={moment().add(-1, 'days').format('YYYY-MM-DD')} onChange={this.dateChangeHandler} ></SelectDate>
-                    <ColumnsTitleLong onClick={this.columnsTitleClickHandler}></ColumnsTitleLong>
+                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate={C.MIN_DATE} maxDate={this.state.maxDate} onChange={this.dateChangeHandler} ></SelectDate>
+                    <ColumnsLongTitle onClick={this.columnsTitleClickHandler}></ColumnsLongTitle>
                     {
                         this.state.top.map((country, i) => {
                             return <StatisticWithCountriesName statistic={country} key={i}></StatisticWithCountriesName>
                         })
                     }
-
                 </div>
             )
         }

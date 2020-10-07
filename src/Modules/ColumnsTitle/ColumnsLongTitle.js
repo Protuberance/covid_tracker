@@ -26,9 +26,6 @@ const ColumnsTitleLong = (props) => {
             </div>
         )
     }
-
 }
-
-
 
 export default ColumnsTitleLong;

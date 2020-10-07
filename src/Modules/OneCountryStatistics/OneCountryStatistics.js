@@ -18,7 +18,7 @@ class OneCountryStatistics extends Component {
             selectedName: 'Выберите страну',
             statistic: null,
             iso: '',
-            currentDate: moment().add(-2, 'days').format('YYYY-MM-DD'),
+            currentDate: moment().add(-25, 'days').format('YYYY-MM-DD'),
             pieChartData: [{ name: 'active', value: 150 }, { name: 'deaths', value: 120 }, { name: 'recovered', value: 100 }]
         }
 

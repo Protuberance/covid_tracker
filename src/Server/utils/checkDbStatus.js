@@ -2,55 +2,56 @@ const moment = require('moment');
 const fetch = require('node-fetch');
 const regions = require('../regions.js');
 
-async function start(db) {
-    dataUpdate(db);
-    setInterval(dataUpdate, 28800000, db);
+module.exports = async (db) => {
+    checkDbStatus(db);
+    setInterval(checkDbStatus, 28800000, db);
 }
 
-async function dataUpdate(db) {
+async function checkDbStatus(db) {
     let res = await db.collection('daily_statistics').find().sort({ date: 1 }).toArray();
     let lastDate = res[res.length - 1].date;
 
-    console.log('last date in db: ' + lastDate);
+    console.log('last date in local db: ' + lastDate);
 
-
-    let condition = true;
-    while (condition) {
+    while (true) {
         lastDate = moment(lastDate).add(1, 'days').format('YYYY-MM-DD');
+        let totalData;
 
-        console.log('next date in db: ' + lastDate);
-
-        totalData = await getTotalStatistic(lastDate);
+        try {
+            totalData = await getTotalStatistic(lastDate);
+        } catch (err) {
+            console.log('Bad response frome remote server. The database cannot be checked');
+            return;
+        }
 
         if (totalData.length === 0) {
-            console.log('date is last date');
-
-            condition = true;
+            console.log('date in local db is last date');
             return;
         } else {
-            console.log('date is not last date');
-
-            await addNewData(lastDate, totalData, db);
+            console.log('date in local db is not last date');
+            try {
+                await addNewData(lastDate, totalData, db);
+            } catch (err) {
+                console.log('Bad response frome remote server. The database cannot be checked');
+                return;
+            }
         }
     }
 }
 
 async function addNewData(date, totalData, db) {
-
-    console.log(date);
+    console.log(date + ' is adding');
 
     let daysStat = {
         date: date,
         countries: [],
         total: {}
     }
-        
-    for (let element of regions) {
 
-        let countrysStat = await getStatistic(element.iso, date);
+    for (let element of regions) {
+        let countrysStat = await getCountryStatistic(element.iso, date);
         countrysStat.iso = element.iso;
         countrysStat.name = element.name;
-
         daysStat.countries.push(countrysStat);
     }
 
@@ -60,33 +61,17 @@ async function addNewData(date, totalData, db) {
         if (err) {
             console.log(err);
         } else {
-            console.log(date + 'ok');
+            console.log(date + ' is added');
         }
     });
 }
 
-async function getStatistic(iso, date) {
-
+async function getCountryStatistic(iso, date) {
     let url = `https://covid-api.com/api/reports?date=${date}&iso=${iso}`;
 
     let response = await fetch(url);
     let data = await response.json();
-    let stat = getGeneralStat(data.data);
-
-    return stat;
-}
-
-async function getTotalStatistic(date) {
-
-    const url = `https://covid-api.com/api/reports/total?date=${date}`;
-
-    let response = await fetch(url);
-    let reports = await response.json();
-    return reports.data;
-}
-
-function getGeneralStat(data) {
-    let summStat = data.reduce((sum, item) => {
+    let stat = data.data.reduce((sum, item) => {
         let _sum = {
             active: sum.active + item.active,
             active_diff: sum.active_diff + item.active_diff,
@@ -109,7 +94,13 @@ function getGeneralStat(data) {
         recovered_diff: 0
     });
 
-    return summStat;
+    return stat;
 }
 
-module.exports = start;
+async function getTotalStatistic(date) {
+    const url = `https://covid-api.com/api/reports/total?date=${date}`;
+
+    let response = await fetch(url);
+    let reports = await response.json();
+    return reports.data;
+}

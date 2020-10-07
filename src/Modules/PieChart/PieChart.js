@@ -1,56 +1,88 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import { animated, useSpring } from "react-spring";
 import * as d3 from "d3";
 
-const Arc = ({ data, index, createArc, colors }) => (
-    <g key={index} className="arc">
-        <path className="arc" d={createArc(data)} fill={colors(index)} />
-        <text
-            transform={`translate(${createArc.centroid(data)})`}
-            textAnchor="middle"
-            alignmentBaseline="middle"
-            fill="white"
-            fontSize="10"
-        >
-            {data.value}
-        </text>
-    </g>
-);
+const colors = d3.scaleOrdinal(d3.schemeCategory10);
+const format = d3.format(".0f");
+const animationDuration = 250;
+const animationConfig = {
+    to: async (next, cancel) => {
+        await next({ t: 1 });
+    },
+    from: { t: 0 },
+    config: { duration: animationDuration },
+    reset: true
+};
 
-const Label = ({ data, index, outerRadius, radius }) => {
+const Arc = ({ index, from, to, createArc, colors, format, animatedProps }) => {
+    const interpolator = d3.interpolate(from, to);
+
+    return (
+        <g key={index} className="arc">
+            <animated.path
+                className="arc"
+                d={animatedProps.t.interpolate(t => createArc(interpolator(t)))}
+                fill={colors(index)}
+            />
+            <animated.text
+                transform={animatedProps.t.interpolate(
+                    t => `translate(${createArc.centroid(interpolator(t))})`
+                )}
+                textAnchor="middle"
+                alignmentBaseline="middle"
+                fill="white"
+                fontSize="10"
+            >
+                {animatedProps.t.interpolate(t => format(interpolator(t).value))}
+            </animated.text>
+        </g>
+    )
+};
+
+const Label = ({ index, outerRadius, radius, from, to, format, animatedProps }) => {
+    const interpolator = d3.interpolate(from, to);
 
     function midAngle(d) {
         return d.startAngle + (d.endAngle - d.startAngle) / 2;
     }
 
-    function getTranslate() {
-        let pos = outerRadius.centroid(data);
-        pos[0] = radius * (midAngle(data) < Math.PI ? 1 : -1);
+    function getTranslate(__data) {
+        let pos = outerRadius.centroid(__data);
+        pos[0] = radius * (midAngle(__data) < Math.PI ? 1 : -1);
         return `translate (${pos})`;
     }
 
     return (
-        <text key={index} dy='.35em' transform={getTranslate()} textAnchor={midAngle(data) < Math.PI ? "start" : "end"}>{data.data.name}</text>
+        <animated.text
+            key={index}
+            dy='.35em'
+            transform={animatedProps.t.interpolate(t => getTranslate(interpolator(t)))}
+            textAnchor={animatedProps.t.interpolate(t => midAngle(interpolator(t))) < Math.PI ? "start" : "end"}>
+            {animatedProps.t.interpolate(t => interpolator(t).data.name)}
+        </animated.text>
     );
 };
 
-const Line = ({ data, index, createArc, outerRadius, radius }) => {
+const Line = ({ data, index, createArc, outerRadius, radius, from, to, animatedProps }) => {
+    const interpolator = d3.interpolate(from, to);
 
     function midAngle(d) {
         return d.startAngle + (d.endAngle - d.startAngle) / 2;
     }
 
-    function getTranslate() {
+    function getTranslate(data) {
         let pos = outerRadius.centroid(data);
         pos[0] = radius * 0.95 * (midAngle(data) < Math.PI ? 1 : -1);
         return pos;
     }
 
     return (
-        <polyline key={index} points={`${createArc.centroid(data)}, ${outerRadius.centroid(data)}, ${getTranslate()}`} fill="none" stroke="black" opacity='0.3'></polyline>
+        <polyline key={index} points={`${createArc.centroid(data)}, ${outerRadius.centroid(data)}, ${animatedProps.t.interpolate(t => getTranslate(interpolator(t)))}`} fill="none" stroke="black" opacity='0.3'></polyline>
     )
 }
 
 const Pie = props => {
+    const cache = useRef([]);
     const createPie = d3
         .pie()
         .value(d => d.value)
@@ -65,25 +97,38 @@ const Pie = props => {
         .innerRadius(props.outerRadius * 1.1)
         .outerRadius(props.outerRadius * 1.1)
 
-    const colors = d3.scaleOrdinal(d3.schemeCategory10);
     const data = createPie(props.data);
-    console.log(data);
+    const previousData = createPie(cache.current);
+
+    const [animatedProps, setAnimatedProps] = useSpring(() => animationConfig);
+    setAnimatedProps(animationConfig);
+
+    useEffect(() => {
+        cache.current = props.data;
+    });
 
     return (
         <svg width={props.width} height={props.height}>
             <g transform={`translate(${props.width / 2} ${props.height / 2})`}>
                 {data.map((d, i) => (
                     <g key={i}><Arc
-                        data={d}
+                        key={i}
                         index={i}
+                        from={previousData[i]}
+                        to={d}
                         createArc={createArc}
                         colors={colors}
+                        format={format}
+                        animatedProps={animatedProps}
                     />
                         <Label
-                            data={d}
                             index={i}
                             outerRadius={outerRadius}
                             radius={props.height / 2}
+                            from={previousData[i]}
+                            to={d}
+                            format={format}
+                            animatedProps={animatedProps}
                         />
                         <Line
                             data={d}
@@ -91,6 +136,9 @@ const Pie = props => {
                             createArc={createArc}
                             outerRadius={outerRadius}
                             radius={props.height / 2}
+                            from={previousData[i]}
+                            to={d}
+                            animatedProps={animatedProps}
                         />
 
                     </g>

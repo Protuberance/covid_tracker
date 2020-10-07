@@ -13,7 +13,7 @@ class GeneralPieChart extends Component {
 
         this.state = {
             statistic: null,
-            currentDate: moment().add(-2, 'days').format('YYYY-MM-DD'),
+            currentDate: moment().add(-25, 'days').format('YYYY-MM-DD'),
             pieChartData: [{ name: 'active', value: 150 }, { name: 'deaths', value: 120 }, { name: 'recovered', value: 100 }]
         };
         this.dateChangeHandler = this.dateChangeHandler.bind(this);
