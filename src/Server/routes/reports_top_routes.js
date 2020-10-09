@@ -11,7 +11,7 @@ module.exports = (req, res) => {
         }
 
         if (result === null || result === {} || result === undefined) {
-            res.sendStatus(500);
+            res.sendStatus(404);
         }
 
         const top = result.countries.sort((a, b) => {

@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import style from './TopCountries.module.css';
 import moment from 'moment';
-import C from '../../constants';
 import SelectDate from '../SelectDate/SelectDate';
 import StatisticWithCountriesName from '../StatisticWithCountriesName/StatisticWithCountriesName';
-import LoadError from '../LoadError/LoadError';
 import Title from '../Title/Title';
 import ColumnsLongTitle from '../ColumnsTitle/ColumnsLongTitle';
 
@@ -13,8 +11,9 @@ class TopCountries extends Component {
         super(props);
 
         this.state = {
-            currentDate: props.currentDate,
-            maxDate: props.maxDate,
+            currentDate: props.lastDate,
+            firstDate: props.firstDate,
+            lastDate: props.lastDate,
             top: null,
             loadError: false,
             query: 'confirmed'
@@ -89,8 +88,8 @@ class TopCountries extends Component {
             return (
                 <div className={style.TopCountries}>
                     <Title text='Топ 5 стран'></Title>
-                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate={C.MIN_DATE} maxDate={this.state.maxDate} onChange={this.dateChangeHandler} ></SelectDate>
-                    <LoadError></LoadError>
+                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate={this.state.firstDate} maxDate={this.state.lastDate} onChange={this.dateChangeHandler} ></SelectDate>
+                    TopCountries...
                 </div>
             )
         }
@@ -98,7 +97,7 @@ class TopCountries extends Component {
             return (
                 <div className={style.TopCountries}>
                     <Title text='Топ 5 стран'></Title>
-                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate={C.MIN_DATE} maxDate={this.state.maxDate} onChange={this.dateChangeHandler} ></SelectDate>
+                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate={this.state.firstDate} maxDate={this.state.lastDate} onChange={this.dateChangeHandler} ></SelectDate>
                     <div>TopCountries..</div>
                 </div>
             )
@@ -106,7 +105,7 @@ class TopCountries extends Component {
             return (
                 <div className={style.TopCountries}>
                     <Title text='Топ 5 стран'></Title>
-                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate={C.MIN_DATE} maxDate={this.state.maxDate} onChange={this.dateChangeHandler} ></SelectDate>
+                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate={this.state.firstDate} maxDate={this.state.lastDate} onChange={this.dateChangeHandler} ></SelectDate>
                     <ColumnsLongTitle onClick={this.columnsTitleClickHandler}></ColumnsLongTitle>
                     {
                         this.state.top.map((country, i) => {

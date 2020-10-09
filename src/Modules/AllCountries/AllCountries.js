@@ -11,8 +11,10 @@ class AllCountries extends Component {
         super(props);
 
         this.state = {
-            currentDate: moment().add(-25, 'days').format('YYYY-MM-DD'),
-            countries: null
+            currentDate: props.lastDate,
+            countries: null,
+            firstDate: props.firstDate,
+            lastDate: props.lastDate
         };
 
         this.dateChangeHandler = this.dateChangeHandler.bind(this);
@@ -36,7 +38,7 @@ class AllCountries extends Component {
 
         fetch(url)
             .then(response => response.json())
-            .then(data => {                
+            .then(data => {
                 if (data === {}) {
                     this.showError();
                     return;
@@ -68,7 +70,7 @@ class AllCountries extends Component {
         return (
             <div className={style.AllCountries}>
                 <Title text='Все страны'></Title>
-                <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate='2020-02-01' maxDate={moment().add(-1, 'days').format('YYYY-MM-DD')} onChange={this.dateChangeHandler} ></SelectDate>
+                <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate={this.state.firstDate} maxDate={this.state.lastDate} onChange={this.dateChangeHandler} ></SelectDate>
                 <ColumnsTitleLong></ColumnsTitleLong>
                 {
                     this.state.countries.map((country, i) => {

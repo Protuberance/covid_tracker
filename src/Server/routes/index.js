@@ -5,12 +5,12 @@ const getCountryStatistic = require('./reports_country_routes');
 const getTotalStatistic = require('./reports_total_routes');
 const getAllStatistic = require('./reports_all_routes');
 const getTopStatistic = require('./reports_top_routes');
-
+const getRelevantDates = require('./relevant_dates');
 
 router.get('/regions', (req, res) => {
-    res.st.send(JSON.stringify(regions));
+    res.send(JSON.stringify(regions));
 });
-
+router.get('/dates', getRelevantDates);
 router.get('/reports/country', getCountryStatistic);
 router.get('/reports/total', getTotalStatistic);
 router.get('/reports/all', getAllStatistic);
