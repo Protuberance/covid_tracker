@@ -42,13 +42,13 @@ const Arc = ({ index, from, to, createArc, colors, format, animatedProps }) => {
 const Label = ({ index, outerRadius, radius, from, to, format, animatedProps }) => {
     const interpolator = d3.interpolate(from, to);
 
-    function midAngle(d) {
-        return d.startAngle + (d.endAngle - d.startAngle) / 2;
+    function midAngle(date) {
+        return date.startAngle + (date.endAngle - date.startAngle) / 2;
     }
 
-    function getTranslate(__data) {
-        let pos = outerRadius.centroid(__data);
-        pos[0] = radius * (midAngle(__data) < Math.PI ? 1 : -1);
+    function getTranslate(date) {
+        let pos = outerRadius.centroid(date);
+        pos[0] = radius * (midAngle(date) < Math.PI ? 1 : -1);
         return `translate (${pos})`;
     }
 
@@ -57,7 +57,7 @@ const Label = ({ index, outerRadius, radius, from, to, format, animatedProps }) 
             key={index}
             dy='.35em'
             transform={animatedProps.t.interpolate(t => getTranslate(interpolator(t)))}
-            textAnchor={animatedProps.t.interpolate(t => midAngle(interpolator(t))) < Math.PI ? "start" : "end"}>
+            textAnchor={animatedProps.t.interpolate(t => midAngle(interpolator(t)) < Math.PI ? "start" : "end")}>
             {animatedProps.t.interpolate(t => interpolator(t).data.name)}
         </animated.text>
     );
@@ -70,16 +70,23 @@ const Line = ({ data, index, createArc, outerRadius, radius, from, to, animatedP
         return d.startAngle + (d.endAngle - d.startAngle) / 2;
     }
 
-    function getTranslate(data) {
-        let pos = outerRadius.centroid(data);
-        pos[0] = radius * 0.95 * (midAngle(data) < Math.PI ? 1 : -1);
-        return pos;
+    function getTranslate(d) {
+        let pos = outerRadius.centroid(d);
+        pos[0] = radius * 0.95 * (midAngle(d) < Math.PI ? 1 : -1);
+        console.log(pos);
+        return [createArc.centroid(data), outerRadius.centroid(data), pos];
     }
 
     return (
-        <polyline key={index} points={`${createArc.centroid(data)}, ${outerRadius.centroid(data)}, ${animatedProps.t.interpolate(t => getTranslate(interpolator(t)))}`} fill="none" stroke="black" opacity='0.3'></polyline>
-    )
-}
+        <animated.polyline
+            key={index}
+            points={animatedProps.t.interpolate(t => getTranslate(interpolator(t)))}
+            fill="none"
+            stroke="black"
+            opacity='0.3'>
+        </animated.polyline>
+    );
+};
 
 const Pie = props => {
     const cache = useRef([]);
