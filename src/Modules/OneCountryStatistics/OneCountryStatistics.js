@@ -18,7 +18,9 @@ class OneCountryStatistics extends Component {
             selectedName: 'Выберите страну',
             statistic: null,
             iso: '',
-            currentDate: moment().add(-25, 'days').format('YYYY-MM-DD'),
+            currentDate: props.lastDate,
+            firstDate: props.firstDate,
+            lastDate: props.lastDate,
             pieChartData: [{ name: 'active', value: 150 }, { name: 'deaths', value: 120 }, { name: 'recovered', value: 100 }]
         }
 
@@ -118,7 +120,7 @@ class OneCountryStatistics extends Component {
             return (
                 <div className={style.OneCountryStatistics}>
                     <Title text='По одной стране'></Title>
-                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate='2020-02-01' maxDate={moment().add(-1, 'days').format('YYYY-MM-DD')} onChange={this.dateChangeHandler} ></SelectDate>
+                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate={this.state.firstDate} maxDate={this.state.lastDate} onChange={this.dateChangeHandler} ></SelectDate>
                     <DropdownList dropdownData={this.state.dropdownData} selectedName={this.state.selectedName} onChange={this.dropdownListHandleChange}></DropdownList>
                 </div>
             )
@@ -126,7 +128,7 @@ class OneCountryStatistics extends Component {
             return (
                 <div className={style.OneCountryStatistics}>
                     <Title text='По одной стране'></Title>
-                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate='2020-02-01' maxDate={moment().add(-1, 'days').format('YYYY-MM-DD')} onChange={this.dateChangeHandler} ></SelectDate>
+                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate={this.state.firstDate} maxDate={this.state.lastDate} onChange={this.dateChangeHandler} ></SelectDate>
                     <DropdownList dropdownData={this.state.dropdownData} selectedName={this.state.selectedName} onChange={this.dropdownListHandleChange}></DropdownList>
                     <div className={style.textDataWrapper}>
                         <ColumnsTitle></ColumnsTitle>

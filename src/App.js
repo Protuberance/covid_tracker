@@ -69,8 +69,8 @@ class App extends Component {
     else {
       return (
         <div className={style.AppContainer}>
-          <GeneralPieChart></GeneralPieChart>
-          <OneCountryStatistics dropdownData={this.state.dropdownData} countries={this.state.countries}></OneCountryStatistics>
+          <GeneralPieChart firstDate={this.state.firstDate} lastDate={this.state.lastDate}></GeneralPieChart>
+          <OneCountryStatistics dropdownData={this.state.dropdownData} countries={this.state.countries} firstDate={this.state.firstDate} lastDate={this.state.lastDate}></OneCountryStatistics>
           <TopCountries firstDate={this.state.firstDate} lastDate={this.state.lastDate}></TopCountries>
           <AllCountries firstDate={this.state.firstDate} lastDate={this.state.lastDate}></AllCountries>
         </div>

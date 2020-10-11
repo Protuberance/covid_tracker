@@ -13,7 +13,9 @@ class GeneralPieChart extends Component {
 
         this.state = {
             statistic: null,
-            currentDate: moment().add(-25, 'days').format('YYYY-MM-DD'),
+            currentDate: props.lastDate,
+            firstDate: props.firstDate,
+            lastDate: props.lastDate,
             pieChartData: [{ name: 'active', value: 150 }, { name: 'deaths', value: 120 }, { name: 'recovered', value: 100 }]
         };
         this.dateChangeHandler = this.dateChangeHandler.bind(this);
@@ -98,7 +100,7 @@ class GeneralPieChart extends Component {
             return (
                 <div className={style.GeneralPieChart}>
                     <Title text='Общая статистика'></Title>
-                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate='2020-02-01' maxDate={moment().add(-1, 'days').format('YYYY-MM-DD')} onChange={this.dateChangeHandler} ></SelectDate>
+                    <SelectDate rewind={this.dateRewindhandler} forward={this.dateFastForwardHandler} currentDate={this.state.currentDate} minDate={this.state.firstDate} maxDate={this.state.lastDate} onChange={this.dateChangeHandler} ></SelectDate>
                     <div className={style.textDataWrapper}>
                         <ColumnsTitle></ColumnsTitle>
                         <SingleLineView statistic={this.state.statistic} ></SingleLineView>
